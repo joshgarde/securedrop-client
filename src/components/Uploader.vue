@@ -131,9 +131,9 @@ export default {
       console.log(keyPair)
 
       var iv = crypto.getRandomValues(new Uint8Array(12))
-      var encryptedBuffer = await crypto.subtle.encrypt(
+      var encryptedBuffer = new Uint8Array(await crypto.subtle.encrypt(
         {name: "AES-GCM", iv}, keyPair, fileBuffer
-      );
+      ));
 
       var finalOut = new Uint8Array(iv.byteLength + encryptedBuffer.byteLength);
       finalOut.set(iv, 0);

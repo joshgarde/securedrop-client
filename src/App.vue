@@ -5,16 +5,23 @@
     </div>
   </div>
 
-  <Uploader/>
+  <Uploader v-if="!isDownloadPath"/>
+  <Downloader v-if="isDownloadPath"/>
 </template>
 
 <script>
 import Uploader from './components/Uploader.vue'
+import Downloader from './components/Downloader.vue'
 
 export default {
   name: 'App',
   components: {
-    Uploader
+    Uploader, Downloader
+  },
+  computed: {
+    isDownloadPath() {
+      return window.location.pathname !== '/';
+    }
   }
 }
 </script>

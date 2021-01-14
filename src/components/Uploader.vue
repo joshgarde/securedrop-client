@@ -1,10 +1,10 @@
 <template>
   <div id="uploader">
     <div class="section container">
-      <div class="box hero is-large" v-bind:class="{'is-dark': hovering}" v-on:drop="handleDrop" v-on:dragover="handleDragOver" v-on:dragenter="handleDragEnter" v-on:dragleave="handleDragLeave">
+      <div class="box hero is-medium" v-bind:class="{'is-dark': hovering}" v-on:drop="handleDrop" v-on:dragover="handleDragOver" v-on:dragenter="handleDragEnter" v-on:dragleave="handleDragLeave">
         <div class="hero-body">
           <!-- Greater Text -->
-          <div v-if="!hovering && !processing">
+          <div v-if="isIdle">
             <h1 class="title has-text-centered">Drop your file here to begin</h1>
           </div>
 
@@ -20,13 +20,21 @@
           </div>
 
           <!-- Share link screen -->
-          <div v-if="done">
-            <h1 class="subtitle has-text-centered">Your drop is ready!</h1>
+          <div v-if="done" class="has-text-centered">
+            <div class="columns">
+              <div class="column">
+                <h1 class="title">
+                  <i class="far fa-check-circle has-text-success"></i>
+                  Package successfully dropped!
+                </h1>
+                <i class="fas fa-parachute-box fa-9x"></i>
+              </div>
+            </div>
             <div class="control">
-              <input class="input" type="text" v-bind:value="downloadURL" readonly>
+              <input class="input has-text-centered" type="text" v-bind:value="downloadURL" readonly>
+              <p>Use this link to share your drop securely</p>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -45,7 +53,8 @@ export default {
       done: false,
       stage: '',
       uploadProgress: -1,
-      downloadURL: ''
+      downloadURL: '',
+      success: false
     }
   },
   methods: {
@@ -62,6 +71,7 @@ export default {
 
       this.stage = "Generating encryption keys...";
       var keys = await generateKeys();
+      var exportedKey = await exportKey(keys.keyPair);
 
       this.stage = "Generating metadata...";
       var metadata = await generateMetadata(keys.keyPair, keys.clearAuthtext, file, fileBuffer);
@@ -88,9 +98,13 @@ export default {
           }
         }
       });
+      let data = response.data;
 
+      this.processing = false;
       this.done = true;
-      this.downloadURL = `${location.pathname}/tempid#filekey`
+      this.success = data.success;
+
+      this.downloadURL = `${location.origin}/${data.id}#${exportedKey}`
     },
 
     handleDragOver(event) {
@@ -105,6 +119,12 @@ export default {
     handleDragLeave(event) {
       event.preventDefault();
       this.hovering = false;
+    }
+  },
+
+  computed: {
+    isIdle() {
+      return !this.hovering && !this.processing && !this.done;
     }
   }
 }
@@ -168,11 +188,19 @@ async function encryptFileBuffer(keyPair, fileBuffer) {
 }
 
 async function exportKey(keyPair) {
-
+  let rawKey = await crypto.subtle.exportKey('raw', keyPair);
+  let base64Key = abtob64(rawKey);
+  return base64Key;
 }
 
 function abtob64(ab) {
   let view = new Uint8Array(ab);
+  let tempBuffer = '';
 
+  for (let i = 0; i < view.length; i++) {
+    tempBuffer += String.fromCharCode(view[i]);
+  }
+
+  return btoa(tempBuffer);
 }
 </script>

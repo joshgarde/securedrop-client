@@ -62,9 +62,7 @@ export default {
       formData.set('metadata', new Blob([metadata.buffer]));
       formData.set('authtext', new Blob([keys.clearAuthtext.buffer]));
 
-      var request = new XMLHttpRequest();
-      request.open("POST", "http://localhost:8080/");
-      request.send(formData);
+      var request = await fetch(`${window.BACKEND_ENDPOINT}/upload`)
     },
 
     handleDragOver(event) {

@@ -10,6 +10,7 @@
         <div class="columns">
           <div class="column">
             <p class="is-size-4">filename.txt</p>
+            <p class="is-size-6">SHA-512: abcdefabcdefabcdef</p>
             <p class="is-size-6">Size: 1024kb</p>
           </div>
         </div>

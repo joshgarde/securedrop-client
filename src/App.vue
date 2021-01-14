@@ -1,7 +1,10 @@
 <template>
   <div class="hero is-primary is-bold">
     <div class="hero-body">
-      <span class="title">SecureDrop</span>
+      <span class="title">
+        <i class="fas fa-user-secret"></i>
+        SecureDrop
+      </span>
     </div>
   </div>
 

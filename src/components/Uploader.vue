@@ -43,6 +43,7 @@
 
 <script>
 import axios from 'axios';
+import {abtob64} from '../helpers/base64';
 
 export default {
   name: 'Uploader',
@@ -109,6 +110,7 @@ export default {
 
     handleDragOver(event) {
       event.preventDefault();
+      this.hovering = true;
     },
 
     handleDragEnter(event) {
@@ -154,10 +156,19 @@ async function generateKeys() {
 }
 
 async function generateMetadata(keyPair, clearAuthtext, file, fileBuffer) {
-  var hash = await crypto.subtle.digest('SHA-512', fileBuffer);
+  var sha512 = await crypto.subtle.digest('SHA-512', fileBuffer);
+  var sha256 = await crypto.subtle.digest('SHA-256', fileBuffer);
+
   var metadata = JSON.stringify({
-    filename: file.name, hash, clearAuthtext
+    filename: file.name,
+    size: file.size,
+    hash: {
+      sha512: abtob64(sha512),
+      sha256: abtob64(sha256)
+    },
+    clearAuthtext: abtob64(clearAuthtext)
   });
+  console.log(`[INFO] Generated metadata: ${metadata}`);
 
   var encoder = new TextEncoder();
   var rawMetadata = encoder.encode(metadata);
@@ -191,16 +202,5 @@ async function exportKey(keyPair) {
   let rawKey = await crypto.subtle.exportKey('raw', keyPair);
   let base64Key = abtob64(rawKey);
   return base64Key;
-}
-
-function abtob64(ab) {
-  let view = new Uint8Array(ab);
-  let tempBuffer = '';
-
-  for (let i = 0; i < view.length; i++) {
-    tempBuffer += String.fromCharCode(view[i]);
-  }
-
-  return btoa(tempBuffer);
 }
 </script>

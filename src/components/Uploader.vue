@@ -43,7 +43,7 @@
 
 <script>
 import axios from 'axios';
-import {abtob64} from '../helpers/base64';
+import {abtob64, abtohex} from '../helpers/converters';
 
 export default {
   name: 'Uploader',
@@ -163,8 +163,8 @@ async function generateMetadata(keyPair, clearAuthtext, file, fileBuffer) {
     filename: file.name,
     size: file.size,
     hash: {
-      sha512: abtob64(sha512),
-      sha256: abtob64(sha256)
+      sha512: abtohex(sha512),
+      sha256: abtohex(sha256)
     },
     clearAuthtext: abtob64(clearAuthtext)
   });

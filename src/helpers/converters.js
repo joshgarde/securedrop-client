@@ -8,3 +8,8 @@ export function abtob64(ab) {
 
   return btoa(tempBuffer);
 }
+
+export function abtohex(ab) {
+  let array = Array.from(new Uint8Array(ab));
+  return array.map(b => b.toString(16).padStart(2, '0')).join('');
+}

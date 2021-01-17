@@ -166,7 +166,7 @@ async function generateMetadata(keyPair, clearAuthtext, file, fileBuffer) {
       sha512: abtohex(sha512),
       sha256: abtohex(sha256)
     },
-    clearAuthtext: abtob64(clearAuthtext)
+    authtext: abtob64(clearAuthtext)
   });
   console.log(`[INFO] Generated metadata: ${metadata}`);
 

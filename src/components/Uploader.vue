@@ -95,7 +95,7 @@ export default {
             let max = progressEvent.total;
             let value = progressEvent.loaded;
 
-            this.uploadProgress = Math.floor(value / max);
+            this.uploadProgress = Math.floor((value / max) * 100);
           }
         }
       });
